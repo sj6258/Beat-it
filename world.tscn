@@ -1,12 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://doo0wkpi8r2ns"]
+[gd_scene load_steps=4 format=3 uid="uid://doo0wkpi8r2ns"]
 
 [ext_resource type="PackedScene" uid="uid://b3roq3r8u0tjy" path="res://scenes/stage/stage.tscn" id="1_f3sb7"]
 [ext_resource type="PackedScene" uid="uid://coqccvnns3mk0" path="res://scenes/characters/player.tscn" id="2_fj7yv"]
+[ext_resource type="PackedScene" uid="uid://b1uwpr5wvjiim" path="res://scenes/stage/camera_2d.tscn" id="3_tlwt5"]
 
 [node name="world" type="Node2D"]
 
 [node name="stage" parent="." instance=ExtResource("1_f3sb7")]
 
 [node name="player" parent="." instance=ExtResource("2_fj7yv")]
-z_index = 1
-position = Vector2(116, 37)
+top_level = true
+position = Vector2(89, 44)
+collision_layer = 1
+collision_mask = 1
+
+[node name="Camera2D" parent="." instance=ExtResource("3_tlwt5")]
+top_level = true
+position = Vector2(50, 32)

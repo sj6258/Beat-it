@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://dys5sw4bnegve" path="res://assets/art/characters/shadow.png" id="2_e22cc"]
 
 [node name="character" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
 script = ExtResource("1_1bdar")
 speed = 5.0
 
