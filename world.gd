@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var player := $player
+@onready var player := $ActorsContainer/player
 @onready var camera := $Camera
 
 func _process(delta: float) -> void:

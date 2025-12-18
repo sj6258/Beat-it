@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://coqccvnns3mk0"]
+[gd_scene load_steps=10 format=3 uid="uid://coqccvnns3mk0"]
 
 [ext_resource type="PackedScene" uid="uid://ditwoiqa1q12c" path="res://scenes/characters/character.tscn" id="1_rp718"]
 [ext_resource type="Texture2D" uid="uid://6e5paky216lw" path="res://assets/art/characters/player.png" id="2_yewv4"]
@@ -40,6 +40,37 @@ tracks/0/keys = {
 "values": [0, 1, 2, 3]
 }
 
+[sub_resource type="Animation" id="Animation_atpat"]
+resource_name = "punch"
+length = 0.15
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("characterSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [21, 22, 23]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.15),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"on_action_complete"
+}]
+}
+
 [sub_resource type="Animation" id="Animation_dyp2m"]
 resource_name = "walk"
 length = 0.8
@@ -62,8 +93,12 @@ tracks/0/keys = {
 _data = {
 &"RESET": SubResource("Animation_76oj4"),
 &"idle": SubResource("Animation_yewv4"),
+&"punch": SubResource("Animation_atpat"),
 &"walk": SubResource("Animation_dyp2m")
 }
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yewv4"]
+size = Vector2(10, 6)
 
 [node name="player" instance=ExtResource("1_rp718")]
 collision_layer = 2
@@ -88,3 +123,13 @@ libraries = {
 &"": SubResource("AnimationLibrary_dyp2m")
 }
 autoplay = "idle"
+
+[node name="DamageEmitter" parent="." index="4"]
+collision_mask = 96
+monitoring = true
+
+[node name="CollisionShape2D" parent="DamageEmitter" index="0"]
+position = Vector2(10, -12)
+shape = SubResource("RectangleShape2D_yewv4")
+
+[editable path="DamageEmitter"]

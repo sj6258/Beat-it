@@ -5,15 +5,12 @@ extends CharacterBody2D
 @export var speed : float
 
 @onready var character_sprite:= $characterSprite
-@onready var damage_emitter := $DamageEmitter
+
 @onready var animation_player:= $AnimationPlayer
 
-enum State {IDLE, WALK, ATTACK}
+enum State {IDLE, WALK}
 
 var state = State.IDLE
-
-func _ready() -> void:
-	damage_emitter.area_entered.connect(_on_emit_damage.bind())
 
 func _process(_delta: float) -> void:
 	handle_animation()
@@ -23,30 +20,20 @@ func _process(_delta: float) -> void:
 	move_and_slide()
 	
 func handle_movement():
-	if can_move():
-		if velocity.length() == 0:
-			state = State.IDLE
-		else:
-			state = State.WALK
+	if velocity.length() == 0:
+		state = State.IDLE
 	else:
-		velocity = Vector2.ZERO
+		state = State.WALK
 		
-		
-		
-	
 func handle_input(): 
 	var direction := Input.get_vector("LEFT" , "RIGHT" , "UP" , "DOWN")
 	velocity = direction * speed
-	if can_attack() and Input.is_action_just_pressed("punch"):
-		state = State.ATTACK
 	
 func handle_animation():
 	if state == State.IDLE:
 		animation_player.play("idle")
 	elif state == State.WALK:
 		animation_player.play("walk")
-	elif state == State.ATTACK:
-		animation_player.play("punch")
 		
 func flip_sprites():
 	if velocity.x > 0:
@@ -54,15 +41,3 @@ func flip_sprites():
 	elif velocity.x < 0:
 		character_sprite.flip_h = true
 		
-func can_move() -> bool:
-	return state == State.IDLE or state == State.WALK
-		
-		
-func can_attack() -> bool:
-	return state == State.IDLE or state == State.WALK
-	
-func on_action_complete():
-	state = State.IDLE
-	
-func _on_emit_damage(damage_reciever: Area2D) -> void:
-	print(damage_reciever)
