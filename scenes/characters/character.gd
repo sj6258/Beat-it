@@ -1,4 +1,6 @@
+class_name Character
 extends CharacterBody2D
+
 
 @export var health : int
 @export var damage : int
@@ -11,7 +13,7 @@ extends CharacterBody2D
 
 const GRAVITY := 600.0
 
-enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING}
+enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK}
 
 var anim_map := {
 	State.IDLE : "idle",
@@ -20,6 +22,7 @@ var anim_map := {
 	State.TAKEOFF : "takeoff",
 	State.JUMP : "jump",
 	State.LANDING : "landing",
+	State.JUMPKICK : "jumpkick"
 	}
 
 var height := 0.0
@@ -44,8 +47,7 @@ func handle_movement():
 			state = State.IDLE
 		else:
 			state = State.WALK
-	else:
-		velocity = Vector2.ZERO
+
 		
 		
 		
@@ -57,6 +59,8 @@ func handle_input():
 		state = State.ATTACK
 	if can_jump() and Input.is_action_just_pressed("jump"):
 		state = State.TAKEOFF
+	if can_jumpkick() and Input.is_action_just_pressed("punch"):
+		state = State.JUMPKICK
 
 
 func handle_animation():
@@ -64,7 +68,7 @@ func handle_animation():
 		animation_player.play(anim_map[state])
 		
 func handle_air_time(delta: float) -> void:
-	if state == State.JUMP:
+	if state == State.JUMP or state == State.JUMPKICK:
 		height += height_speed * delta
 		if height < 0:
 			height = 0
@@ -92,6 +96,9 @@ func can_attack() -> bool:
 	
 func can_jump() -> bool:
 	return state == State.IDLE or state == State.WALK
+	
+func can_jumpkick() -> bool:
+	return state == State.JUMP
 
 func on_action_complete():
 	state = State.IDLE

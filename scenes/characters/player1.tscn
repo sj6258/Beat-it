@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://caveucuw7a27w"]
+
+[ext_resource type="PackedScene" uid="uid://ditwoiqa1q12c" path="res://scenes/characters/character.tscn" id="1_3fgug"]
+[ext_resource type="Texture2D" uid="uid://6e5paky216lw" path="res://assets/art/characters/player.png" id="2_obasw"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vj6ms"]
+radius = 2.0
+height = 12.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3fgug"]
+size = Vector2(10, 6)
+
+[node name="player" instance=ExtResource("1_3fgug")]
+
+[node name="characterSprite" parent="." index="1"]
+texture = ExtResource("2_obasw")
+centered = false
+offset = Vector2(-24, -48)
+hframes = 10
+vframes = 10
+
+[node name="CollisionShape2D" parent="." index="2"]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_vj6ms")
+
+[node name="CollisionShape2D" parent="DamageEmitter" index="0"]
+position = Vector2(10, -12)
+shape = SubResource("RectangleShape2D_3fgug")
+
+[editable path="DamageEmitter"]
+[editable path="DamageReciever"]
