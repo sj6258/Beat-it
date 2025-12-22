@@ -2,18 +2,20 @@ class_name Character
 extends CharacterBody2D
 
 
-@export var health : int
+@export var max_health : int
 @export var damage : int
 @export var speed : float
 @export var jump_intensity : float
+@export var knockback_intensity : float
 
 @onready var character_sprite:= $characterSprite
 @onready var damage_emitter := $DamageEmitter
 @onready var animation_player:= $AnimationPlayer
+@onready var damage_reciever : DamageReciever = $DamageReciever
 
 const GRAVITY := 600.0
 
-enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK}
+enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT}
 
 var anim_map := {
 	State.IDLE : "idle",
@@ -22,15 +24,18 @@ var anim_map := {
 	State.TAKEOFF : "takeoff",
 	State.JUMP : "jump",
 	State.LANDING : "landing",
-	State.JUMPKICK : "jumpkick"
+	State.JUMPKICK : "jumpkick",
+	State.HURT : "hurt",
 	}
-
+var current_health := 0
 var height := 0.0
 var height_speed := 0.0
 var state = State.IDLE
 
 func _ready() -> void:
 	damage_emitter.area_entered.connect(_on_emit_damage.bind())
+	damage_reciever.damage_recieved.connect(on_recieve_damage.bind())
+	current_health = max_health
 
 func _process(_delta: float) -> void:
 	handle_animation()
@@ -52,15 +57,8 @@ func handle_movement():
 		
 		
 	
-func handle_input(): 
-	var direction := Input.get_vector("LEFT" , "RIGHT" , "UP" , "DOWN")
-	velocity = direction * speed
-	if can_attack() and Input.is_action_just_pressed("punch"):
-		state = State.ATTACK
-	if can_jump() and Input.is_action_just_pressed("jump"):
-		state = State.TAKEOFF
-	if can_jumpkick() and Input.is_action_just_pressed("punch"):
-		state = State.JUMPKICK
+func handle_input() -> void:
+	pass
 
 
 func handle_animation():
@@ -109,6 +107,14 @@ func on_takeoff_complete() -> void:
  
 func on_landing_complete() -> void:
 	state = State.IDLE
+	
+func on_recieve_damage(damage, direction: Vector2) -> void:
+	current_health = current_health - clamp(damage, 0, max_health)
+	if current_health <= 0:
+		queue_free()
+	else:
+		state = State.HURT
+		velocity = direction * knockback_intensity
 
 
 func _on_emit_damage(damage_reciever: DamageReciever) -> void:
