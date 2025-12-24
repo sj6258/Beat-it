@@ -53,13 +53,9 @@ func handle_movement():
 		else:
 			state = State.WALK
 
-		
-		
-		
 	
 func handle_input() -> void:
 	pass
-
 
 func handle_animation():
 	if animation_player.has_animation(anim_map[state]):
@@ -108,8 +104,8 @@ func on_takeoff_complete() -> void:
 func on_landing_complete() -> void:
 	state = State.IDLE
 	
-func on_recieve_damage(damage, direction: Vector2) -> void:
-	current_health = current_health - clamp(damage, 0, max_health)
+func on_recieve_damage(amount: int, direction: Vector2) -> void:
+	current_health = current_health - clamp(amount, 0, max_health)
 	if current_health <= 0:
 		queue_free()
 	else:
@@ -117,7 +113,6 @@ func on_recieve_damage(damage, direction: Vector2) -> void:
 		velocity = direction * knockback_intensity
 
 
-func _on_emit_damage(damage_reciever: DamageReciever) -> void:
-	var direction:= Vector2.LEFT if damage_reciever.global_position.x < global_position.x else Vector2.RIGHT
-	damage_reciever.damage_recieved.emit(damage, direction)
-	print(damage_reciever)
+func _on_emit_damage(reciever: DamageReciever) -> void:
+	var direction:= Vector2.LEFT if reciever.global_position.x < global_position.x else Vector2.RIGHT
+	reciever.damage_recieved.emit(damage, direction)
