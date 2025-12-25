@@ -19,7 +19,7 @@ func handle_input() -> void:
 				velocity = direction * speed
 				
 				
-func on_recieve_damage(amount: int, direction: Vector2) -> void:
-	super.on_recieve_damage(amount, direction)
+func on_recieve_damage(amount: int, direction: Vector2,hit_type: DamageReciever.HitType) -> void:
+	super.on_recieve_damage(amount, direction, hit_type)
 	if current_health == 0:
 		player.free_slot(self)

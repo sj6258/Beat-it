@@ -42,23 +42,23 @@ y_sort_enabled = true
 position = Vector2(46, 45)
 
 [node name="BasicEnemy2" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(12, 59)
+position = Vector2(13, 62)
 player = NodePath("../player")
 
 [node name="BasicEnemy6" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(21, 40)
+position = Vector2(16, 33)
 player = NodePath("../player")
 
 [node name="BasicEnemy3" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(73, 39)
+position = Vector2(84, 34)
 player = NodePath("../player")
 
 [node name="BasicEnemy4" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(81, 57)
+position = Vector2(89, 59)
 player = NodePath("../player")
 
 [node name="BasicEnemy5" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(50, 76)
+position = Vector2(134, 60)
 player = NodePath("../player")
 
 [node name="player" parent="ActorsContainer" instance=ExtResource("5_dwbse")]
