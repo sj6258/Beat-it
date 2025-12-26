@@ -1,10 +1,12 @@
 class_name Character
 extends CharacterBody2D
 
-
+@export var can_respawn : bool
 @export var max_health : int
 @export var damage : int
+@export var damage_power : int
 @export var speed : float
+@export var flight_speed :  float
 @export var jump_intensity : float
 @export var knockback_intensity : float
 @export var knockdown_intensity : float
@@ -18,12 +20,13 @@ extends CharacterBody2D
 
 const GRAVITY := 600.0
 
-enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED}
+enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY}
 
-var anim_map := {
+
+var anim_attacks :=["punch", "punch_alt", "kick", "roundkick"]
+var anim_map : Dictionary = {
 	State.IDLE : "idle",
 	State.WALK : "walk",
-	State.ATTACK : "punch",
 	State.TAKEOFF : "takeoff",
 	State.JUMP : "jump",
 	State.LANDING : "landing",
@@ -31,10 +34,15 @@ var anim_map := {
 	State.HURT : "hurt",
 	State.FALL : "fall",
 	State.GROUNDED : "grounded",
+	State.DEATH : "gorunded",
+	State.FLY : "fly",
 	}
+	
+var attack_combo_index := 0
 var current_health := 0
 var height := 0.0
 var height_speed := 0.0
+var is_last_hit_successful := false
 var state = State.IDLE
 var time_since_grounded := Time.get_ticks_msec()
 
@@ -49,9 +57,10 @@ func _process(_delta: float) -> void:
 	handle_movement()
 	handle_air_time(_delta)
 	handle_grounded()
+	handle_death(_delta)
 	flip_sprites()
 	character_sprite.position = Vector2.UP * height
-	collision_shape.disabled = state == State.GROUNDED
+	collision_shape.disabled = is_collision_disabled()
 	move_and_slide()
 	
 func handle_movement():
@@ -68,10 +77,21 @@ func handle_input() -> void:
 	
 func handle_grounded() -> void:
 	if state == State.GROUNDED and (Time.get_ticks_msec() - time_since_grounded > duration_grounded):
-		state = State.LANDING
+		if current_health == 0:
+			state = State.DEATH
+		else:
+			state = State.LANDING
+
+func handle_death(delta: float) -> void:
+	if state == State.DEATH and not can_respawn:
+		modulate.a -= delta / 2.0
+		if modulate.a <= 0:
+			queue_free()
 
 func handle_animation():
-	if animation_player.has_animation(anim_map[state]):
+	if state == State.ATTACK:
+		animation_player.play(anim_attacks[attack_combo_index])
+	elif animation_player.has_animation(anim_map[state]):
 		animation_player.play(anim_map[state])
 		
 func handle_air_time(delta: float) -> void:
@@ -110,7 +130,13 @@ func can_attack() -> bool:
 	
 func can_jump() -> bool:
 	return state == State.IDLE or state == State.WALK
+
+func can_get_hurt() -> bool:
+	return [State.IDLE, State.WALK, State.TAKEOFF, State.JUMP, State.LANDING].has(state)
 	
+func is_collision_disabled() -> bool:
+	return [State.GROUNDED, State.DEATH, State.FLY].has(state)
+
 func can_jumpkick() -> bool:
 	return state == State.JUMP
 
@@ -125,18 +151,29 @@ func on_landing_complete() -> void:
 	state = State.IDLE
 	
 func on_recieve_damage(amount: int, direction: Vector2, hit_type: DamageReciever.HitType) -> void:
-	current_health = current_health - clamp(amount, 0, max_health)
-	if current_health == 0 or hit_type == DamageReciever.HitType.KNOCKDOWN:
-		state = State.FALL
-		height_speed = knockdown_intensity
-	else:
-		state = State.HURT
-		velocity = direction * knockback_intensity
+	if can_get_hurt():
+		print(str(amount))
+		current_health = current_health - clamp(amount, 0, max_health)
+		if current_health == 0 or hit_type == DamageReciever.HitType.KNOCKDOWN:
+			state = State.FALL
+			height_speed = knockdown_intensity
+			velocity = direction * knockback_intensity
+		elif hit_type ==  DamageReciever.HitType.POWER:
+			state = State.FLY
+			velocity =  direction * flight_speed
+		else:
+			state = State.HURT
+			velocity = direction * knockback_intensity
 
 
 func _on_emit_damage(reciever: DamageReciever) -> void:
 	var hit_type := DamageReciever.HitType.NORMAL
 	var direction:= Vector2.LEFT if reciever.global_position.x < global_position.x else Vector2.RIGHT
+	var current_damage = damage
 	if state == State.JUMPKICK:
 		hit_type = DamageReciever.HitType.KNOCKDOWN
-	reciever.damage_recieved.emit(damage, direction, hit_type)
+	if attack_combo_index == anim_attacks.size() - 1:
+		hit_type = DamageReciever.HitType.POWER
+		current_damage = damage_power
+	reciever.damage_recieved.emit(current_damage, direction, hit_type)
+	is_last_hit_successful = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cpvk00xguo1l5"]
+[gd_scene load_steps=17 format=3 uid="uid://cpvk00xguo1l5"]
 
 [ext_resource type="PackedScene" uid="uid://ditwoiqa1q12c" path="res://scenes/characters/character.tscn" id="1_xsmbu"]
 [ext_resource type="Texture2D" uid="uid://c3t4yehrgpjmo" path="res://assets/art/characters/enemy_punk.png" id="2_dwul0"]
@@ -108,24 +108,6 @@ tracks/0/keys = {
 "values": [0]
 }
 
-[sub_resource type="Animation" id="Animation_wh1i7"]
-resource_name = "walk"
-length = 0.8
-loop_mode = 1
-step = 0.1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("characterSprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [10, 11, 12, 13, 14, 15, 16]
-}
-
 [sub_resource type="Animation" id="Animation_wpldu"]
 resource_name = "land"
 length = 0.1
@@ -164,10 +146,47 @@ tracks/1/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_wh1i7"]
+resource_name = "walk"
+length = 0.8
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("characterSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [10, 11, 12, 13, 14, 15, 16]
+}
+
+[sub_resource type="Animation" id="Animation_7v0pw"]
+resource_name = "fly"
+length = 0.1
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("characterSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [50]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_kcdp1"]
 _data = {
 &"RESET": SubResource("Animation_dwul0"),
 &"fall": SubResource("Animation_6fn6m"),
+&"fly": SubResource("Animation_7v0pw"),
 &"grounded": SubResource("Animation_7mf7s"),
 &"hurt": SubResource("Animation_kcdp1"),
 &"idle": SubResource("Animation_xsmbu"),
@@ -189,6 +208,7 @@ script = ExtResource("2_wh1i7")
 max_health = 20
 damage = 2
 speed = 25.0
+flight_speed = 10.0
 knockback_intensity = 40.0
 knockdown_intensity = 70.0
 duration_grounded = 1000.0
