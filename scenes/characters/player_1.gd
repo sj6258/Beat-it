@@ -3,6 +3,10 @@ extends Character
 
 @onready var enemy_slots : Array = $EnemySlots.get_children()
 
+func _ready() -> void:
+	super._ready()
+	anim_attacks = ["punch", "punch_alt", "kick", "roundkick"]
+
 func handle_input() -> void:
 	var direction := Input.get_vector("LEFT" , "RIGHT" , "UP" , "DOWN")
 	velocity = direction * speed
@@ -17,6 +21,14 @@ func handle_input() -> void:
 		state = State.TAKEOFF
 	if can_jumpkick() and Input.is_action_just_pressed("punch"):
 		state = State.JUMPKICK
+
+func set_heading() -> void:
+	if velocity.x > 0:
+		heading = Vector2.RIGHT
+	elif velocity.x < 0:
+		heading = Vector2.LEFT
+		
+
 
 func reserve_slot(enemy: BasicEnemy) -> EnemySlot:
 	var available_slots := enemy_slots.filter(

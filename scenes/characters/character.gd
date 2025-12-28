@@ -13,6 +13,7 @@ extends CharacterBody2D
 @export var duration_grounded: float
 
 @onready var character_sprite:= $characterSprite
+@onready var collateral_damage_emitter : Area2D = $CollateralDamageEmitter
 @onready var collision_shape := $CollisionShape2D
 @onready var damage_emitter := $DamageEmitter
 @onready var animation_player:= $AnimationPlayer
@@ -20,10 +21,10 @@ extends CharacterBody2D
 
 const GRAVITY := 600.0
 
-enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY}
+enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY, PREP_ATTACK}
 
 
-var anim_attacks :=["punch", "punch_alt", "kick", "roundkick"]
+var anim_attacks :=[]
 var anim_map : Dictionary = {
 	State.IDLE : "idle",
 	State.WALK : "walk",
@@ -36,10 +37,12 @@ var anim_map : Dictionary = {
 	State.GROUNDED : "grounded",
 	State.DEATH : "gorunded",
 	State.FLY : "fly",
+	State.PREP_ATTACK : "idle",
 	}
 	
 var attack_combo_index := 0
 var current_health := 0
+var heading := Vector2.RIGHT
 var height := 0.0
 var height_speed := 0.0
 var is_last_hit_successful := false
@@ -49,6 +52,8 @@ var time_since_grounded := Time.get_ticks_msec()
 func _ready() -> void:
 	damage_emitter.area_entered.connect(_on_emit_damage.bind())
 	damage_reciever.damage_recieved.connect(on_recieve_damage.bind())
+	collateral_damage_emitter.area_entered.connect(on_emit_collateral_damage.bind())
+	collateral_damage_emitter.body_entered.connect(on_wall_hit.bind())
 	current_health = max_health
 
 func _process(_delta: float) -> void:
@@ -56,8 +61,10 @@ func _process(_delta: float) -> void:
 	handle_input()
 	handle_movement()
 	handle_air_time(_delta)
+	handle_prep_attack()
 	handle_grounded()
 	handle_death(_delta)
+	set_heading()
 	flip_sprites()
 	character_sprite.position = Vector2.UP * height
 	collision_shape.disabled = is_collision_disabled()
@@ -73,8 +80,10 @@ func handle_movement():
 	
 func handle_input() -> void:
 	pass
-	
-	
+
+func handle_prep_attack() -> void:
+	pass
+
 func handle_grounded() -> void:
 	if state == State.GROUNDED and (Time.get_ticks_msec() - time_since_grounded > duration_grounded):
 		if current_health == 0:
@@ -111,12 +120,14 @@ func handle_air_time(delta: float) -> void:
 			height_speed -= GRAVITY * delta
 	
 	
+func set_heading() -> void:
+	pass
 
 func flip_sprites():
-	if velocity.x > 0:
+	if heading == Vector2.RIGHT:
 		character_sprite.flip_h = false
 		damage_emitter.scale.x = 1
-	elif velocity.x < 0:
+	else:
 		character_sprite.flip_h = true
 		damage_emitter.scale.x = -1
 
@@ -177,3 +188,13 @@ func _on_emit_damage(reciever: DamageReciever) -> void:
 		current_damage = damage_power
 	reciever.damage_recieved.emit(current_damage, direction, hit_type)
 	is_last_hit_successful = true
+
+func on_emit_collateral_damage(reciever: DamageReciever) -> void:
+	if reciever != damage_reciever:
+		var direction := Vector2.LEFT if reciever.global_position.x < global_position.x else Vector2.RIGHT
+		reciever.damage_recieved.emit(0, direction, DamageReciever.HitType.KNOCKDOWN)
+
+func on_wall_hit(_wallL: AnimatableBody2D) -> void:
+	state = State.FALL
+	height_speed = knockdown_intensity
+	velocity = -velocity / 2.0
