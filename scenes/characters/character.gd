@@ -2,15 +2,19 @@ class_name Character
 extends CharacterBody2D
 
 @export var can_respawn : bool
+@export var can_respawn_knifes : bool
 @export var max_health : int
 @export var damage : int
 @export var damage_power : int
+@export var duration_grounded: float
+@export var duration_between_knife_respawn : int
 @export var speed : float
 @export var flight_speed :  float
+@export var has_knife : bool
 @export var jump_intensity : float
 @export var knockback_intensity : float
 @export var knockdown_intensity : float
-@export var duration_grounded: float
+
 
 @onready var character_sprite:= $characterSprite
 @onready var collateral_damage_emitter : Area2D = $CollateralDamageEmitter
@@ -18,10 +22,12 @@ extends CharacterBody2D
 @onready var damage_emitter := $DamageEmitter
 @onready var animation_player:= $AnimationPlayer
 @onready var damage_reciever : DamageReciever = $DamageReciever
+@onready var knife_sprite : Sprite2D = $KnifeSprite
+@onready var projectile_aim : RayCast2D = $ProjectileAim
 
 const GRAVITY := 600.0
 
-enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY, PREP_ATTACK}
+enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY, PREP_ATTACK, THROW}
 
 
 var anim_attacks :=[]
@@ -38,6 +44,7 @@ var anim_map : Dictionary = {
 	State.DEATH : "gorunded",
 	State.FLY : "fly",
 	State.PREP_ATTACK : "idle",
+	State.THROW : "throw",
 	}
 	
 var attack_combo_index := 0
@@ -48,6 +55,7 @@ var height_speed := 0.0
 var is_last_hit_successful := false
 var state = State.IDLE
 var time_since_grounded := Time.get_ticks_msec()
+var time_since_knife_dismiss := Time.get_ticks_msec()
 
 func _ready() -> void:
 	damage_emitter.area_entered.connect(_on_emit_damage.bind())
@@ -63,10 +71,13 @@ func _process(_delta: float) -> void:
 	handle_air_time(_delta)
 	handle_prep_attack()
 	handle_grounded()
+	handle_knife_respawns()
 	handle_death(_delta)
 	set_heading()
 	flip_sprites()
+	knife_sprite.visible = has_knife
 	character_sprite.position = Vector2.UP * height
+	knife_sprite.position = Vector2.UP * height
 	collision_shape.disabled = is_collision_disabled()
 	move_and_slide()
 	
@@ -90,6 +101,10 @@ func handle_grounded() -> void:
 			state = State.DEATH
 		else:
 			state = State.LANDING
+
+func handle_knife_respawns() -> void:
+	if can_respawn_knifes and not has_knife and (Time.get_ticks_msec() - time_since_knife_dismiss > duration_between_knife_respawn):
+		has_knife = true
 
 func handle_death(delta: float) -> void:
 	if state == State.DEATH and not can_respawn:
@@ -126,9 +141,13 @@ func set_heading() -> void:
 func flip_sprites():
 	if heading == Vector2.RIGHT:
 		character_sprite.flip_h = false
+		knife_sprite.flip_h = false
+		projectile_aim.scale.x = 1
 		damage_emitter.scale.x = 1
 	else:
 		character_sprite.flip_h = true
+		knife_sprite.flip_h = true
+		projectile_aim.scale.x = -1
 		damage_emitter.scale.x = -1
 
 
@@ -143,7 +162,7 @@ func can_jump() -> bool:
 	return state == State.IDLE or state == State.WALK
 
 func can_get_hurt() -> bool:
-	return [State.IDLE, State.WALK, State.TAKEOFF, State.JUMP, State.LANDING].has(state)
+	return [State.IDLE, State.WALK, State.TAKEOFF, State.LANDING].has(state)
 	
 func is_collision_disabled() -> bool:
 	return [State.GROUNDED, State.DEATH, State.FLY].has(state)
@@ -153,7 +172,11 @@ func can_jumpkick() -> bool:
 
 func on_action_complete():
 	state = State.IDLE
-	
+
+func on_throw_complete() -> void:
+	state = State.IDLE
+	has_knife = false
+
 func on_takeoff_complete() -> void:
 	state = State.JUMP
 	height_speed = jump_intensity
@@ -163,7 +186,9 @@ func on_landing_complete() -> void:
 	
 func on_recieve_damage(amount: int, direction: Vector2, hit_type: DamageReciever.HitType) -> void:
 	if can_get_hurt():
-		print(str(amount))
+		if has_knife:
+			has_knife = false
+			time_since_knife_dismiss = Time.get_ticks_msec()
 		current_health = current_health - clamp(amount, 0, max_health)
 		if current_health == 0 or hit_type == DamageReciever.HitType.KNOCKDOWN:
 			state = State.FALL
