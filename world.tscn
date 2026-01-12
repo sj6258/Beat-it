@@ -47,10 +47,8 @@ y_sort_enabled = true
 position = Vector2(46, 45)
 
 [node name="BasicEnemy2" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(86, 59)
+position = Vector2(59, 59)
 collision_layer = 6
-duration_between_hits = 2000
-duration_prep_hit = 500
 player = NodePath("../player")
 can_respawn_knifes = true
 duration_between_knife_respawn = 2000
