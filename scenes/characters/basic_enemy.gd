@@ -21,7 +21,7 @@ func _ready() -> void:
 
 func handle_input() -> void:
 	if player != null and can_move():
-		if can_respawn_knifes:
+		if can_respawn_knifes or has_knife:
 			goto_range_position()
 		else:
 			goto_melee_posiition()
@@ -55,7 +55,11 @@ func goto_range_position() -> void:
 	
 
 func goto_melee_posiition() -> void:
-	if player_slot == null:
+	if can_pickup_collectibles():
+		state = State.PICKUP
+		if player_slot != null:
+			player.free_slot(self)
+	elif  player_slot == null:
 		player_slot = player.reserve_slot(self)
 	
 	if player_slot != null:

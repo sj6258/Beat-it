@@ -18,6 +18,7 @@ extends CharacterBody2D
 
 @onready var character_sprite:= $characterSprite
 @onready var collateral_damage_emitter : Area2D = $CollateralDamageEmitter
+@onready var collectible_sensor : Area2D = $CollectibleSensor
 @onready var collision_shape := $CollisionShape2D
 @onready var damage_emitter := $DamageEmitter
 @onready var animation_player:= $AnimationPlayer
@@ -25,9 +26,10 @@ extends CharacterBody2D
 @onready var knife_sprite : Sprite2D = $KnifeSprite
 @onready var projectile_aim : RayCast2D = $ProjectileAim
 
+
 const GRAVITY := 600.0
 
-enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY, PREP_ATTACK, THROW}
+enum State {IDLE, WALK, ATTACK, TAKEOFF, JUMP, LANDING, JUMPKICK, HURT, FALL, GROUNDED, DEATH, FLY, PREP_ATTACK, THROW, PICKUP}
 
 
 var anim_attacks :=[]
@@ -45,6 +47,7 @@ var anim_map : Dictionary = {
 	State.FLY : "fly",
 	State.PREP_ATTACK : "idle",
 	State.THROW : "throw",
+	State.PICKUP : "pickup",
 	}
 	
 var attack_combo_index := 0
@@ -163,7 +166,26 @@ func can_jump() -> bool:
 
 func can_get_hurt() -> bool:
 	return [State.IDLE, State.WALK, State.TAKEOFF, State.LANDING].has(state)
-	
+
+func can_pickup_collectibles() -> bool:
+	var collectible_areas = collectible_sensor.get_overlapping_areas()
+	if collectible_areas.size() == 0:
+		return false
+	var collectible : Collectible = collectible_areas[0]
+	if collectible.type == Collectible.Type.KNIFE and not has_knife:
+		return true
+	return false
+
+func pickup_collectible() -> void:
+	if can_pickup_collectibles():
+		var collectible_areas = collectible_sensor.get_overlapping_areas()
+		var collectible : Collectible = collectible_areas[0]
+		if collectible.type == Collectible.Type.KNIFE and not has_knife:
+			has_knife = true
+		
+		collectible.queue_free()
+
+
 func is_collision_disabled() -> bool:
 	return [State.GROUNDED, State.DEATH, State.FLY].has(state)
 
@@ -181,11 +203,16 @@ func on_takeoff_complete() -> void:
 	state = State.JUMP
 	height_speed = jump_intensity
  
+func on_pickup_complete() -> void:
+	state = State.IDLE
+	pickup_collectible()
+
 func on_landing_complete() -> void:
 	state = State.IDLE
 	
 func on_recieve_damage(amount: int, direction: Vector2, hit_type: DamageReciever.HitType) -> void:
 	if can_get_hurt():
+		can_respawn_knifes = false
 		if has_knife:
 			has_knife = false
 			time_since_knife_dismiss = Time.get_ticks_msec()
