@@ -792,6 +792,9 @@ hframes = 10
 vframes = 10
 frame = 80
 
+[node name="WeaponPosition" parent="KnifeSprite" index="0"]
+position = Vector2(18, -14)
+
 [node name="CollectibleSensor" parent="." index="10"]
 collision_mask = 256
 monitorable = false

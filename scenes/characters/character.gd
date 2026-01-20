@@ -25,6 +25,7 @@ extends CharacterBody2D
 @onready var damage_reciever : DamageReciever = $DamageReciever
 @onready var knife_sprite : Sprite2D = $KnifeSprite
 @onready var projectile_aim : RayCast2D = $ProjectileAim
+@onready var weapon_position : Node2D = $KnifeSprite/WeaponPosition
 
 
 const GRAVITY := 600.0
@@ -102,6 +103,7 @@ func handle_grounded() -> void:
 	if state == State.GROUNDED and (Time.get_ticks_msec() - time_since_grounded > duration_grounded):
 		if current_health == 0:
 			state = State.DEATH
+			
 		else:
 			state = State.LANDING
 
@@ -144,12 +146,12 @@ func set_heading() -> void:
 func flip_sprites():
 	if heading == Vector2.RIGHT:
 		character_sprite.flip_h = false
-		knife_sprite.flip_h = false
+		knife_sprite.scale.x = 1
 		projectile_aim.scale.x = 1
 		damage_emitter.scale.x = 1
 	else:
 		character_sprite.flip_h = true
-		knife_sprite.flip_h = true
+		knife_sprite.scale.x = -1
 		projectile_aim.scale.x = -1
 		damage_emitter.scale.x = -1
 
@@ -198,6 +200,9 @@ func on_action_complete():
 func on_throw_complete() -> void:
 	state = State.IDLE
 	has_knife = false
+	var knife_global_position := Vector2(weapon_position.global_position.x, global_position.y)
+	var knife_height := -weapon_position.position.y
+	EntityManager.spawn_collectible.emit(Collectible.Type.KNIFE, Collectible.State.FLY, knife_global_position, heading, knife_height)
 
 func on_takeoff_complete() -> void:
 	state = State.JUMP
@@ -216,7 +221,7 @@ func on_recieve_damage(amount: int, direction: Vector2, hit_type: DamageReciever
 		if has_knife:
 			has_knife = false
 			time_since_knife_dismiss = Time.get_ticks_msec()
-		current_health = current_health - clamp(amount, 0, max_health)
+		current_health = clamp(current_health - amount,0, max_health)
 		if current_health == 0 or hit_type == DamageReciever.HitType.KNOCKDOWN:
 			state = State.FALL
 			height_speed = knockdown_intensity
