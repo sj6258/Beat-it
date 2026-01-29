@@ -51,7 +51,7 @@ script = ExtResource("3_gbfbk")
 position = Vector2(46, 45)
 
 [node name="BasicEnemy2" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(18, 53)
+position = Vector2(85, 40)
 collision_layer = 6
 player = NodePath("../player")
 
