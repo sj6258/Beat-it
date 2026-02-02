@@ -51,17 +51,23 @@ script = ExtResource("3_gbfbk")
 position = Vector2(46, 45)
 
 [node name="BasicEnemy2" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("5_036b0")]
-position = Vector2(85, 40)
+position = Vector2(17, 39)
 collision_layer = 6
 player = NodePath("../player")
 
 [node name="player" parent="ActorsContainer" instance=ExtResource("5_dwbse")]
 position = Vector2(57, 45)
-has_knife = true
+duration_between_knife_respawn = null
+flight_speed = null
+has_knife = null
+has_gun = true
 
 [node name="knife" parent="ActorsContainer" instance=ExtResource("6_dwbse")]
 position = Vector2(36, 55)
 
 [node name="GoonEnemy" parent="ActorsContainer" node_paths=PackedStringArray("player") instance=ExtResource("7_pkg7o")]
-position = Vector2(72, 57)
+position = Vector2(89, 57)
 player = NodePath("../player")
+can_respawn_knifes = false
+has_knife = false
+has_gun = true
