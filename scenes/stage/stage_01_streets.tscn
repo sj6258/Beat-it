@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://clxakl7n3fskn"]
+
+[ext_resource type="PackedScene" uid="uid://b3roq3r8u0tjy" path="res://scenes/stage/stage.tscn" id="1_lluwt"]
+[ext_resource type="Texture2D" uid="uid://c1820wj6vb0ra" path="res://assets/art/backgrounds/street-background.png" id="2_5wvst"]
+[ext_resource type="PackedScene" uid="uid://cwem8c5730jlr" path="res://scenes/stage/check_point.tscn" id="3_j5gp6"]
+[ext_resource type="PackedScene" uid="uid://bq3c0df7bk6lj" path="res://scenes/characters/goon_enemy.tscn" id="4_mslao"]
+[ext_resource type="PackedScene" uid="uid://cpvk00xguo1l5" path="res://scenes/characters/basic_enemy.tscn" id="5_2j5k0"]
+
+[node name="Stage-01-Streets" instance=ExtResource("1_lluwt")]
+
+[node name="MainBackground" parent="background" index="0"]
+texture = ExtResource("2_5wvst")
+
+[node name="CheckPoint" parent="Checkpoints" index="0" instance=ExtResource("3_j5gp6")]
+
+[node name="GoonEnemy" parent="Checkpoints/CheckPoint/Enemies" index="0" instance=ExtResource("4_mslao")]
+position = Vector2(131, 53)
+
+[node name="GoonEnemy2" parent="Checkpoints/CheckPoint/Enemies" index="1" instance=ExtResource("4_mslao")]
+position = Vector2(121, 48)
+
+[node name="BasicEnemy" parent="Checkpoints/CheckPoint/Enemies" index="2" instance=ExtResource("5_2j5k0")]
+position = Vector2(259, 50)
+
+[node name="BasicEnemy2" parent="Checkpoints/CheckPoint/Enemies" index="3" instance=ExtResource("5_2j5k0")]
+position = Vector2(255, 57)
+
+[node name="CollisionShape2D" parent="Checkpoints/CheckPoint/PlayerDetectionArea" index="0"]
+position = Vector2(195, 32)
+
+[node name="CollisionShape2D" parent="Checkpoints/CheckPoint/CheckpointPlayArea" index="0"]
+position = Vector2(193, 32)
+
+[editable path="Checkpoints/CheckPoint"]

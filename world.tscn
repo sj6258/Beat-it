@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://doo0wkpi8r2ns"]
 
-[ext_resource type="PackedScene" uid="uid://b3roq3r8u0tjy" path="res://scenes/stage/stage.tscn" id="1_f3sb7"]
 [ext_resource type="Script" uid="uid://da0bpxv0c0ebx" path="res://world.gd" id="1_tlwt5"]
+[ext_resource type="PackedScene" uid="uid://clxakl7n3fskn" path="res://scenes/stage/stage_01_streets.tscn" id="2_036b0"]
 [ext_resource type="Script" uid="uid://bhf5o4dbbo3wi" path="res://actors_container.gd" id="3_gbfbk"]
 [ext_resource type="PackedScene" uid="uid://caveucuw7a27w" path="res://scenes/characters/player1.tscn" id="5_dwbse"]
 
@@ -11,8 +11,7 @@ size = Vector2(6, 64)
 [node name="world" type="Node2D"]
 script = ExtResource("1_tlwt5")
 
-[node name="stage" parent="." instance=ExtResource("1_f3sb7")]
-position = Vector2(11, 0)
+[node name="Stage-01-Streets" parent="." instance=ExtResource("2_036b0")]
 
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2(50, 32)
@@ -44,4 +43,4 @@ y_sort_enabled = true
 script = ExtResource("3_gbfbk")
 
 [node name="player" parent="ActorsContainer" instance=ExtResource("5_dwbse")]
-position = Vector2(57, 45)
+position = Vector2(44, 45)
