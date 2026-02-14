@@ -1,7 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://b3roq3r8u0tjy"]
+[gd_scene load_steps=3 format=3 uid="uid://b3roq3r8u0tjy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ecxui"]
 size = Vector2(415, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t3lwb"]
+size = Vector2(24, 72)
 
 [node name="stage" type="Node2D"]
 
@@ -27,5 +30,12 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WorldColliders/StaticBody2D2"]
 position = Vector2(199, 0)
 shape = SubResource("RectangleShape2D_ecxui")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="WorldColliders"]
+position = Vector2(410, 22)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldColliders/StaticBody2D3"]
+position = Vector2(2, 26)
+shape = SubResource("RectangleShape2D_t3lwb")
 
 [node name="Checkpoints" type="Node2D" parent="."]

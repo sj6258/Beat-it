@@ -112,3 +112,4 @@ func on_recieve_damage(amount: int, direction: Vector2,hit_type: DamageReciever.
 	super.on_recieve_damage(amount, direction, hit_type)
 	if current_health == 0:
 		player.free_slot(self)
+		EntityManager.death_enemy.emit(self)

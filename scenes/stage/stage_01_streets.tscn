@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://clxakl7n3fskn"]
+[gd_scene load_steps=9 format=3 uid="uid://clxakl7n3fskn"]
 
 [ext_resource type="PackedScene" uid="uid://b3roq3r8u0tjy" path="res://scenes/stage/stage.tscn" id="1_lluwt"]
 [ext_resource type="Texture2D" uid="uid://c1820wj6vb0ra" path="res://assets/art/backgrounds/street-background.png" id="2_5wvst"]
 [ext_resource type="PackedScene" uid="uid://cwem8c5730jlr" path="res://scenes/stage/check_point.tscn" id="3_j5gp6"]
 [ext_resource type="PackedScene" uid="uid://bq3c0df7bk6lj" path="res://scenes/characters/goon_enemy.tscn" id="4_mslao"]
 [ext_resource type="PackedScene" uid="uid://cpvk00xguo1l5" path="res://scenes/characters/basic_enemy.tscn" id="5_2j5k0"]
+[ext_resource type="PackedScene" uid="uid://dcwfleqv7eeu5" path="res://scenes/characters/igor_boss.tscn" id="6_2j5k0"]
+[ext_resource type="PackedScene" uid="uid://cr33jpmddh6wh" path="res://scenes/characters/thug_enemy.tscn" id="6_mslao"]
+[ext_resource type="Texture2D" uid="uid://bryh8a1uhn4cn" path="res://assets/art/backgrounds/window.png" id="8_w6ome"]
 
 [node name="Stage-01-Streets" instance=ExtResource("1_lluwt")]
 
@@ -14,21 +17,67 @@ texture = ExtResource("2_5wvst")
 [node name="CheckPoint" parent="Checkpoints" index="0" instance=ExtResource("3_j5gp6")]
 
 [node name="GoonEnemy" parent="Checkpoints/CheckPoint/Enemies" index="0" instance=ExtResource("4_mslao")]
-position = Vector2(131, 53)
+position = Vector2(52, 41)
 
 [node name="GoonEnemy2" parent="Checkpoints/CheckPoint/Enemies" index="1" instance=ExtResource("4_mslao")]
-position = Vector2(121, 48)
+position = Vector2(52, 51)
 
 [node name="BasicEnemy" parent="Checkpoints/CheckPoint/Enemies" index="2" instance=ExtResource("5_2j5k0")]
-position = Vector2(259, 50)
+position = Vector2(182, 41)
 
 [node name="BasicEnemy2" parent="Checkpoints/CheckPoint/Enemies" index="3" instance=ExtResource("5_2j5k0")]
-position = Vector2(255, 57)
+position = Vector2(174, 57)
 
 [node name="CollisionShape2D" parent="Checkpoints/CheckPoint/PlayerDetectionArea" index="0"]
-position = Vector2(195, 32)
+position = Vector2(112, 32)
 
 [node name="CollisionShape2D" parent="Checkpoints/CheckPoint/CheckpointPlayArea" index="0"]
-position = Vector2(193, 32)
+position = Vector2(112, 32)
+
+[node name="CheckPoint3" parent="Checkpoints" index="1" instance=ExtResource("3_j5gp6")]
+nb_simultaneous_enemies = 1
+
+[node name="IgorBoss" parent="Checkpoints/CheckPoint3/Enemies" index="0" instance=ExtResource("6_2j5k0")]
+position = Vector2(388, 50)
+
+[node name="CollisionShape2D" parent="Checkpoints/CheckPoint3/PlayerDetectionArea" index="0"]
+position = Vector2(332, 32)
+
+[node name="CollisionShape2D" parent="Checkpoints/CheckPoint3/CheckpointPlayArea" index="0"]
+position = Vector2(327, 32)
+
+[node name="CheckPoint2" parent="Checkpoints" index="2" instance=ExtResource("3_j5gp6")]
+nb_simultaneous_enemies = 3
+
+[node name="Enemies" parent="Checkpoints/CheckPoint2" index="0"]
+position = Vector2(101, -1)
+
+[node name="ThugEnemy2" parent="Checkpoints/CheckPoint2/Enemies" index="0" instance=ExtResource("6_mslao")]
+position = Vector2(176, 43)
+
+[node name="BasicEnemy" parent="Checkpoints/CheckPoint2/Enemies" index="1" instance=ExtResource("5_2j5k0")]
+position = Vector2(95, 95)
+
+[node name="BasicEnemy2" parent="Checkpoints/CheckPoint2/Enemies" index="2" instance=ExtResource("5_2j5k0")]
+position = Vector2(130, 95)
+
+[node name="BasicEnemy3" parent="Checkpoints/CheckPoint2/Enemies" index="3" instance=ExtResource("5_2j5k0")]
+position = Vector2(160, 95)
+
+[node name="ThugEnemy" parent="Checkpoints/CheckPoint2/Enemies" index="4" instance=ExtResource("6_mslao")]
+position = Vector2(100, -4)
+
+[node name="CollisionShape2D" parent="Checkpoints/CheckPoint2/PlayerDetectionArea" index="0"]
+position = Vector2(221, 32)
+
+[node name="CollisionShape2D" parent="Checkpoints/CheckPoint2/CheckpointPlayArea" index="0"]
+position = Vector2(217, 32)
+
+[node name="Sprite2D" type="Sprite2D" parent="." index="3"]
+position = Vector2(429.00003, 40.000004)
+scale = Vector2(3.5, 5.125)
+texture = ExtResource("8_w6ome")
 
 [editable path="Checkpoints/CheckPoint"]
+[editable path="Checkpoints/CheckPoint3"]
+[editable path="Checkpoints/CheckPoint2"]

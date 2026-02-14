@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://doo0wkpi8r2ns"]
+[gd_scene load_steps=7 format=3 uid="uid://doo0wkpi8r2ns"]
 
 [ext_resource type="Script" uid="uid://da0bpxv0c0ebx" path="res://world.gd" id="1_tlwt5"]
 [ext_resource type="PackedScene" uid="uid://clxakl7n3fskn" path="res://scenes/stage/stage_01_streets.tscn" id="2_036b0"]
 [ext_resource type="Script" uid="uid://bhf5o4dbbo3wi" path="res://actors_container.gd" id="3_gbfbk"]
+[ext_resource type="PackedScene" uid="uid://w3fln5m0dkns" path="res://scenes/props/barrel.tscn" id="5_036b0"]
 [ext_resource type="PackedScene" uid="uid://caveucuw7a27w" path="res://scenes/characters/player1.tscn" id="5_dwbse"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tlwt5"]
@@ -15,6 +16,8 @@ script = ExtResource("1_tlwt5")
 
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2(50, 32)
+position_smoothing_enabled = true
+position_smoothing_speed = 3.0
 
 [node name="invisiblewalls" type="Node2D" parent="Camera"]
 position = Vector2(-50, -32)
@@ -37,10 +40,26 @@ sync_to_physics = false
 position = Vector2(100, 32)
 shape = SubResource("RectangleShape2D_tlwt5")
 
-[node name="ActorsContainer" type="Node2D" parent="."]
+[node name="ActorsContainer" type="Node2D" parent="." node_paths=PackedStringArray("player")]
 top_level = true
 y_sort_enabled = true
 script = ExtResource("3_gbfbk")
+player = NodePath("player")
 
 [node name="player" parent="ActorsContainer" instance=ExtResource("5_dwbse")]
 position = Vector2(44, 45)
+
+[node name="Barrel" parent="ActorsContainer" instance=ExtResource("5_036b0")]
+position = Vector2(120, 41)
+
+[node name="Barrel2" parent="ActorsContainer" instance=ExtResource("5_036b0")]
+position = Vector2(225, 40)
+content_type = 2
+
+[node name="Barrel3" parent="ActorsContainer" instance=ExtResource("5_036b0")]
+position = Vector2(329, 40)
+content_type = 2
+
+[node name="Barrel4" parent="ActorsContainer" instance=ExtResource("5_036b0")]
+position = Vector2(353, 64)
+content_type = 1
